@@ -6,6 +6,7 @@ const settings = require("./settings");
 const { cacheControlFor } = require("./static/cache-headers");
 const { buildIndexHtml } = require("./static/index-html");
 const { getObsidianTerms } = require("./static/obsidian-terms");
+const { buildObsidianApp } = require("./static/obsidian-app");
 const {
   setupWebSocket,
   watcher,
@@ -91,6 +92,7 @@ const proxyRoutes = require("./routes/proxy");
 const versionRoutes = require("./routes/version");
 const settingsRoutes = require("./routes/settings");
 const bootstrapRoutes = require("./routes/bootstrap");
+const execRoutes = require("./routes/exec");
 const bootstrapCache = require("./cache");
 const treeReconcile = require("./cache/reconcile");
 const { createMetadataChannel } = require("./cache/metadata-channel");
@@ -105,6 +107,7 @@ app.use("/api/proxy", proxyRoutes);
 app.use("/api/version", versionRoutes);
 app.use("/api/settings", settingsRoutes);
 app.use("/api/plugins", pluginRoutes);
+app.use("/api/exec", execRoutes);
 app.use("/api/bootstrap", bootstrapRoutes);
 
 // Serve vault files for resource URLs (images, attachments, etc.)
@@ -126,8 +129,13 @@ app.use("/vault-files", (req, res, next) => {
 
   let resolved = null;
 
+  // Plugins build resource URLs from the vault's /vaults/<id> path.
+  const prefixed =
+    parts[1] === "vaults" && decodeURIComponent(parts[2] ?? "") === vaultId;
+  const fileParts = parts.slice(prefixed ? 3 : 1);
+
   try {
-    const relPath = parts.slice(1).map(decodeURIComponent).join("/");
+    const relPath = fileParts.map(decodeURIComponent).join("/");
     resolved = relPath ? resolveVaultPath(vaultPath, relPath) : null;
   } catch {
     // resolved stays null and gets handled by static handler
@@ -149,7 +157,7 @@ app.use("/vault-files", (req, res, next) => {
   }
 
   // Rewrite req.url to strip the vault ID prefix, then serve statically
-  req.url = "/" + parts.slice(1).join("/");
+  req.url = "/" + fileParts.join("/");
   express.static(vaultPath)(req, res, next);
 });
 
@@ -157,6 +165,13 @@ app.get(["/", "/index.html"], (req, res) => {
   res.set("Content-Type", "text/html; charset=utf-8");
   res.set("Cache-Control", "no-cache");
   res.send(buildIndexHtml());
+});
+
+app.get("/app.js", (req, res) => {
+  res
+    .type("js")
+    .set("Cache-Control", cacheControlFor(req.path, "v" in req.query))
+    .send(buildObsidianApp());
 });
 
 app.get("/favicon.png", (req, res) => {

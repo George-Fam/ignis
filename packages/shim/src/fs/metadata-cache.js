@@ -1,3 +1,5 @@
+import { normalize } from "../util/path.js";
+
 // In-memory metadata cache
 // Populated from /api/fs/tree on startup, kept in sync via transport events.
 // All stat/exists/readdir calls are served from this cache.
@@ -135,9 +137,6 @@ export class MetadataCache {
 
   _normalize(p) {
     // Normalize slashes, remove leading and trailing slashes
-    return (p || "")
-      .replace(/\\/g, "/")
-      .replace(/^\/+/, "")
-      .replace(/\/+$/, "");
+    return normalize(p);
   }
 }

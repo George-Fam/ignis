@@ -7,7 +7,7 @@ function getVaultId() {
 function triggerDownload(endpoint, filePath, downloadName) {
   const vaultId = getVaultId();
   const url =
-    `/api/fs/${endpoint}` +
+    `${window.__ignisBasePath}/api/fs/${endpoint}` +
     `?vault=${encodeURIComponent(vaultId)}` +
     `&path=${encodeURIComponent(filePath)}`;
 

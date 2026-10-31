@@ -1,3 +1,4 @@
+import { setVaultPrefix } from "./util/path.js";
 import { fsShim } from "./fs/index.js";
 import { installRequestUrlShim } from "./request-url.js";
 import { vaultService } from "@ignis/services";
@@ -110,10 +111,16 @@ function applyVaultInfo(info) {
   localStorage.setItem("last-vault", info.id);
   window.__obsidianVersion = info.version || "0.0.0";
 
+  // Plugins see the vault at its path in the runner, so an absolute path they build
+  // means the same file in the browser and in a command. The fs shim stays vault-relative.
+  const vaultPath = `/vaults/${info.id}`;
+
   window.__vaultConfig = {
     id: info.id,
-    path: "/",
+    path: vaultPath,
   };
+
+  setVaultPrefix(vaultPath);
 
   if (info.trustPlugins) {
     vaultService.setVaultTrust(info.id);

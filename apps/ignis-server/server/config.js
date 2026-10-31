@@ -138,6 +138,9 @@ module.exports = {
   devSuppressWriteFailures: process.env.DEV_SUPPRESS_WRITE_FAILURES === "true",
   devForceReadingView: process.env.DEV_FORCE_READING_VIEW === "true",
 
+  // Unix socket of the plugin command runner. Plugin commands are off when unset.
+  execSocket: process.env.IGNIS_EXEC_SOCKET || null,
+
   obsidianAssetsPath:
     process.env.OBSIDIAN_ASSETS_PATH ||
     path.join(REPO_ROOT, "investigation", "obsidian_1.14.4_unpacked"),

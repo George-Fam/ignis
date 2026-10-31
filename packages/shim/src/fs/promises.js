@@ -1,3 +1,24 @@
+import { execFile } from "../node/child_process.js";
+
+// Tool folders live in the runner, so plugins searching PATH for a command must ask it.
+const RUNNER_BIN_DIRS = ["/opt/py/bin/", "/usr/local/bin/", "/usr/bin/", "/bin/"];
+
+function isRunnerCommand(path) {
+  return typeof path === "string" && RUNNER_BIN_DIRS.some((dir) => path.startsWith(dir));
+}
+
+function runnerAccess(path) {
+  return new Promise((resolve, reject) => {
+    execFile("/usr/bin/test", ["-x", path], (error) => {
+      if (error) {
+        reject(Object.assign(new Error(`ENOENT: no such file or directory, access '${path}'`), { code: "ENOENT" }));
+      } else {
+        resolve();
+      }
+    });
+  });
+}
+
 import { markSentOp } from "./echo-guard.js";
 import {
   bufferWrite,
@@ -307,6 +328,10 @@ export function createFsPromises(metadataCache, contentCache, transport) {
     },
 
     async access(path) {
+      if (isRunnerCommand(path)) {
+        return runnerAccess(path);
+      }
+
       const resolved = resolvePath(path);
 
       if (metadataCache.has(resolved)) {

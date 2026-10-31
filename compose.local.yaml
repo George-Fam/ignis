@@ -1,0 +1,46 @@
+# Ignis fork for this box (branch homebox of George-Fam/ignis): Obsidian in the browser at
+# https://panel.famcode.net/ignis/ (swizzin login, see ~/homebox/nginx/ignis.conf).
+# Desktop plugins' commands run in `runner`, which has the vaults and no network or secrets.
+# Start: docker compose -f compose.local.yaml up -d --build
+name: ignis
+
+services:
+  ignis:
+    build:
+      context: .
+      dockerfile: apps/ignis-server/Dockerfile
+    image: ignis:homebox
+    container_name: ignis
+    security_opt: ["no-new-privileges:true"]
+    environment:
+      PUID: "1000"
+      PGID: "1000"
+      IGNIS_EXEC_SOCKET: /run/ignis/runner.sock
+    volumes:
+      - ${IGNIS_VAULTS:-./vaults}:/vaults
+      - ./data:/app/data
+      - ./run:/run/ignis
+      - obsidian-app:/app/obsidian-app
+    ports:
+      - "127.0.0.1:8418:8080"   # outside only through nginx; Ignis has no login of its own
+    depends_on: [runner]
+    restart: unless-stopped
+
+  runner:
+    build: apps/ignis-runner
+    image: ignis-runner:homebox
+    container_name: ignis-runner
+    network_mode: none
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    mem_limit: 2g
+    pids_limit: 256
+    tmpfs:
+      - /tmp:size=1g,uid=1000,gid=1000,mode=700
+    volumes:
+      - ${IGNIS_VAULTS:-./vaults}:/vaults
+      - ./run:/run/ignis
+    restart: unless-stopped
+
+volumes:
+  obsidian-app:

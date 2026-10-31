@@ -3,7 +3,7 @@ import bridgeCss from "@ignis/bridge/styles.css";
 export function installCssOverrides() {
   const link = document.createElement("link");
   link.rel = "stylesheet";
-  link.href = "/assets/overrides.css";
+  link.href = "assets/overrides.css";
   link.setAttribute("data-ignis", "css-overrides");
   document.head.appendChild(link);
 

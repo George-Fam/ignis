@@ -1,7 +1,9 @@
+import { normalize } from "../util/path.js";
+
 const API_BASE = "/api/fs";
 
 function normPath(p) {
-  return (p || "").replace(/^\/+/, "");
+  return normalize(p);
 }
 
 function uint8ToBase64(bytes) {

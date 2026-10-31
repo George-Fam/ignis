@@ -1,3 +1,5 @@
+import { normalize } from "../util/path.js";
+
 // In-memory content cache with simple LRU eviction
 // Stores file content fetched from the server.
 
@@ -147,9 +149,6 @@ export class ContentCache {
   }
 
   _normalize(p) {
-    return (p || "")
-      .replace(/\\/g, "/")
-      .replace(/^\/+/, "")
-      .replace(/\/+$/, "");
+    return normalize(p);
   }
 }

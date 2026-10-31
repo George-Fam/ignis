@@ -13,7 +13,7 @@ function isVaultImage(el) {
 
     return (
       url.origin === window.location.origin &&
-      url.pathname.startsWith("/vault-files/")
+      url.pathname.includes("/vault-files/")
     );
   } catch {
     return false;

@@ -1,3 +1,4 @@
+import "./base-path.js";
 import { installRequire } from "./require.js";
 import { installGlobals } from "./globals/index.js";
 import { installCssOverrides } from "./css-overrides.js";

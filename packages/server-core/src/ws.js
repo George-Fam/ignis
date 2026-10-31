@@ -32,7 +32,22 @@ function setupWebSocket(server, opts = {}) {
 
   const originSet = toOriginSet(originAllowlist);
 
-  const wss = new WebSocketServer({ server, path: "/ws" });
+  const wss = new WebSocketServer({
+    server,
+    path: "/ws",
+    // A browser sends basic auth to any site's socket, so only same-origin pages may connect.
+    verifyClient: ({ origin, req }) => {
+      if (!origin) {
+        return true;
+      }
+
+      try {
+        return new URL(origin).host === req.headers.host;
+      } catch {
+        return false;
+      }
+    },
+  });
 
   // Global message handlers: type -> handler(msg, ws).
   wss.messageHandlers = new Map();

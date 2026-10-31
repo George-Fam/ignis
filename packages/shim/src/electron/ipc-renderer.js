@@ -35,7 +35,9 @@ const syncHandlers = {
   },
 
   "file-url": () =>
-    "/vault-files/" + encodeURIComponent(window.__currentVaultId || "") + "/",
+    window.__ignisBasePath +
+    "/vault-files/" +
+    encodeURIComponent(window.__currentVaultId || "") + "/",
 
   "disable-update": () => true,
   update: () => "",

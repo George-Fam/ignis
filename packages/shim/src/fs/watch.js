@@ -1,3 +1,5 @@
+import { normalize } from "../util/path.js";
+
 export function createFsWatch(transport) {
   const watchers = new Map(); // path -> Set<listener>
 
@@ -77,10 +79,10 @@ export function createFsWatch(transport) {
 
     // Internal: called when transport receives a file-change event
     _dispatch(eventType, filePath) {
-      const normFile = (filePath || "").replace(/^\/+/, "");
+      const normFile = normalize(filePath);
 
       for (const [watchPath, listeners] of watchers) {
-        const normWatch = (watchPath || "").replace(/^\/+/, "");
+        const normWatch = normalize(watchPath);
         // Empty normWatch means root watcher  -  matches everything
         const isMatch =
           normWatch === "" ||

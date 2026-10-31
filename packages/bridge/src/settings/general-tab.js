@@ -14,17 +14,17 @@ const ICON_LINKS = [
   {
     label: "Discord",
     href: "https://discord.gg/8pqQQj4my",
-    icon: "/assets/discord.svg",
+    icon: "assets/discord.svg",
   },
   {
     label: "Ko-fi",
     href: "https://ko-fi.com/nystik",
-    icon: "/assets/kofi.svg",
+    icon: "assets/kofi.svg",
   },
   {
     label: "GitHub Sponsors",
     href: "https://github.com/sponsors/Nystik-gh",
-    icon: "/assets/githubsponsors.svg",
+    icon: "assets/githubsponsors.svg",
   },
 ];
 
@@ -85,7 +85,7 @@ function addHeader(containerEl) {
 
   header.createEl("img", {
     cls: "ignis-header-logo",
-    attr: { src: "/assets/ignis.webp", alt: "Ignis" },
+    attr: { src: "assets/ignis.webp", alt: "Ignis" },
   });
 
   const info = header.createDiv("ignis-header-info");
@@ -117,7 +117,7 @@ function addHeader(containerEl) {
 
   githubLink.createEl("img", {
     cls: "ignis-github-icon",
-    attr: { src: "/assets/github.svg", alt: "GitHub" },
+    attr: { src: "assets/github.svg", alt: "GitHub" },
   });
 
   checkForUpdate(version).then((latest) => {
